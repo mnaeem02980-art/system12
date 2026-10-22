@@ -1,0 +1,1861 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apna Tuck Shop - Smart ERP & POS System v2.0</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Font Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Theme Custom Variables Definition */
+        :root, [data-theme="dark-slate"] {
+            --bg-main: #0f172a; /* slate-900 */
+            --bg-sidebar: #020617; /* slate-950 */
+            --bg-card: rgba(30, 41, 59, 0.6); /* slate-800/60 */
+            --bg-card-hover: rgba(51, 65, 85, 0.6);
+            --bg-input: #0f172a;
+            --bg-header: rgba(2, 6, 23, 0.6);
+            --border-color: rgba(51, 65, 85, 0.6); /* slate-700/60 */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --accent-primary: #06b6d4; /* cyan-500 */
+            --accent-hover: #0891b2;
+            --accent-soft: rgba(6, 182, 212, 0.15);
+            --accent-border: rgba(6, 182, 212, 0.3);
+            --accent-text: #22d3ee;
+            --badge-bg: #1e293b;
+            --badge-text: #38bdf8;
+            --table-header: #020617;
+            --shadow-accent: rgba(6, 182, 212, 0.25);
+        }
+
+        [data-theme="emerald-light"] {
+            --bg-main: #f8fafc; /* slate-50 */
+            --bg-sidebar: #ffffff;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --bg-input: #ffffff;
+            --bg-header: rgba(255, 255, 255, 0.85);
+            --border-color: #cbd5e1; /* slate-300 */
+            --text-main: #0f172a; /* slate-900 */
+            --text-muted: #64748b; /* slate-500 */
+            --accent-primary: #10b981; /* emerald-500 */
+            --accent-hover: #059669;
+            --accent-soft: rgba(16, 185, 129, 0.12);
+            --accent-border: rgba(16, 185, 129, 0.35);
+            --accent-text: #047857; /* emerald-700 */
+            --badge-bg: #ecfdf5;
+            --badge-text: #059669;
+            --table-header: #f1f5f9;
+            --shadow-accent: rgba(16, 185, 129, 0.2);
+        }
+
+        [data-theme="midnight-amber"] {
+            --bg-main: #0a0a0c;
+            --bg-sidebar: #000000;
+            --bg-card: rgba(24, 24, 27, 0.8); /* zinc-900 */
+            --bg-card-hover: rgba(39, 39, 42, 0.8);
+            --bg-input: #09090b;
+            --bg-header: rgba(0, 0, 0, 0.8);
+            --border-color: rgba(63, 63, 70, 0.7); /* zinc-700 */
+            --text-main: #fafafa;
+            --text-muted: #a1a1aa;
+            --accent-primary: #f59e0b; /* amber-500 */
+            --accent-hover: #d97706;
+            --accent-soft: rgba(245, 158, 11, 0.15);
+            --accent-border: rgba(245, 158, 11, 0.35);
+            --accent-text: #fbbf24; /* amber-400 */
+            --badge-bg: #27272a;
+            --badge-text: #fcd34d;
+            --table-header: #000000;
+            --shadow-accent: rgba(245, 158, 11, 0.25);
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            transition: background-color 0.25s ease, color 0.25s ease;
+        }
+
+        /* Custom Dynamic Classes */
+        .theme-bg-main { background-color: var(--bg-main); }
+        .theme-bg-sidebar { background-color: var(--bg-sidebar); }
+        .theme-bg-card { background-color: var(--bg-card); }
+        .theme-bg-input { background-color: var(--bg-input); }
+        .theme-bg-header { background-color: var(--bg-header); }
+        .theme-border { border-color: var(--border-color); }
+        .theme-text-main { color: var(--text-main); }
+        .theme-text-muted { color: var(--text-muted); }
+        .theme-text-accent { color: var(--accent-text); }
+        .theme-bg-accent { background-color: var(--accent-primary); }
+        .theme-bg-accent-soft { background-color: var(--accent-soft); }
+        .theme-border-accent { border-color: var(--accent-border); }
+        .theme-table-header { background-color: var(--table-header); }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-main);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 4px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printable-receipt, #printable-receipt * {
+                visibility: visible;
+            }
+            #printable-receipt {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 80mm;
+                color: black !important;
+                background: white !important;
+                padding: 10px;
+                font-family: monospace;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-full flex overflow-hidden font-sans antialiased selection:bg-amber-500 selection:text-white">
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-5 right-5 z-50 flex flex-col gap-2 max-w-md"></div>
+
+    <!-- Main Container -->
+    <div class="flex w-full h-full overflow-hidden">
+        
+        <!-- Sidebar Navigation -->
+        <aside class="w-64 theme-bg-sidebar border-r theme-border flex flex-col flex-shrink-0 z-20 transition-colors">
+            <!-- App Header -->
+            <div class="p-4 border-b theme-border flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="theme-bg-accent p-2.5 rounded-xl text-white flex items-center justify-center shadow-lg">
+                        <i data-lucide="store" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-base theme-text-main leading-tight" id="sidebar-shop-name">Apna Tuck Shop</h1>
+                        <p class="text-[11px] theme-text-muted font-medium">Smart ERP & POS v2.0</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Items -->
+            <nav class="flex-1 overflow-y-auto p-3 space-y-1">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all theme-text-muted hover:theme-text-main hover:bg-slate-500/10">
+                    <i data-lucide="layout-dashboard" class="w-5 h-5"></i>
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="switchTab('pos')" id="nav-pos" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all theme-text-muted hover:theme-text-main hover:bg-slate-500/10">
+                    <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                    <span>POS Counter</span>
+                    <span class="ml-auto theme-bg-accent-soft theme-text-accent text-xs px-2 py-0.5 rounded-full border theme-border-accent font-semibold">F2</span>
+                </button>
+                <button onclick="switchTab('inventory')" id="nav-inventory" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all theme-text-muted hover:theme-text-main hover:bg-slate-500/10">
+                    <i data-lucide="boxes" class="w-5 h-5"></i>
+                    <span>Inventory & Stock</span>
+                </button>
+                <button onclick="switchTab('udhar')" id="nav-udhar" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all theme-text-muted hover:theme-text-main hover:bg-slate-500/10">
+                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                    <span>Udhar Khata (Credit)</span>
+                    <span id="udhar-badge-count" class="ml-auto bg-amber-500/10 text-amber-500 text-xs px-2 py-0.5 rounded-full border border-amber-500/30 font-semibold">0</span>
+                </button>
+                <button onclick="switchTab('suppliers')" id="nav-suppliers" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all theme-text-muted hover:theme-text-main hover:bg-slate-500/10">
+                    <i data-lucide="truck" class="w-5 h-5"></i>
+                    <span>Suppliers & Orders</span>
+                </button>
+                <button onclick="switchTab('reports')" id="nav-reports" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all theme-text-muted hover:theme-text-main hover:bg-slate-500/10">
+                    <i data-lucide="bar-chart-3" class="w-5 h-5"></i>
+                    <span>Reports & Analytics</span>
+                </button>
+                <button onclick="switchTab('settings')" id="nav-settings" class="nav-btn w-full flex items-center gap-3 px-3.5 py-3 rounded-xl font-medium text-sm transition-all theme-text-muted hover:theme-text-main hover:bg-slate-500/10">
+                    <i data-lucide="settings" class="w-5 h-5"></i>
+                    <span>Settings & Backup</span>
+                </button>
+            </nav>
+
+            <!-- User Info Badge -->
+            <div class="p-3 border-t theme-border bg-slate-500/5">
+                <div class="flex items-center gap-3 theme-bg-card p-2.5 rounded-lg border theme-border">
+                    <div class="w-8 h-8 rounded-full theme-bg-accent-soft border theme-border-accent theme-text-accent flex items-center justify-center font-bold text-xs">
+                        TS
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-xs font-semibold theme-text-main truncate" id="sidebar-cashier-display">Admin Cashier</p>
+                        <p class="text-[10px] text-emerald-500 flex items-center gap-1 font-medium">
+                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Shift Active
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Panel -->
+        <main class="flex-1 flex flex-col h-full overflow-hidden theme-bg-main transition-colors">
+            
+            <!-- Top App Header -->
+            <header class="h-16 theme-bg-header backdrop-blur border-b theme-border flex items-center justify-between px-6 z-10 flex-shrink-0">
+                <div class="flex items-center gap-3">
+                    <h2 id="page-title" class="text-xl font-bold theme-text-main tracking-tight">Dashboard Overview</h2>
+                    <span id="live-time-display" class="text-xs px-2.5 py-1 theme-bg-card theme-text-muted rounded-full border theme-border"></span>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <!-- Theme Selector Dropdown -->
+                    <div class="flex items-center gap-1.5 bg-slate-500/10 p-1 rounded-xl border theme-border">
+                        <i data-lucide="palette" class="w-4 h-4 theme-text-accent ml-2"></i>
+                        <select id="theme-selector" onchange="changeAppTheme(this.value)" class="bg-transparent text-xs font-semibold theme-text-main pr-2 py-1 focus:outline-none cursor-pointer">
+                            <option value="dark-slate" class="bg-slate-900 text-slate-100">Dark Slate / Teal</option>
+                            <option value="emerald-light" class="bg-white text-slate-900">Emerald Pure Light</option>
+                            <option value="midnight-amber" class="bg-black text-amber-400">Midnight Gold</option>
+                        </select>
+                    </div>
+
+                    <button onclick="switchTab('pos')" class="flex items-center gap-2 theme-bg-accent hover:opacity-90 text-white font-semibold text-sm px-4 py-2 rounded-lg shadow-lg transition-all">
+                        <i data-lucide="plus-circle" class="w-4 h-4"></i>
+                        <span>New Sale (POS)</span>
+                    </button>
+                    <button onclick="resetDataPrompt()" title="Reset Sample Data" class="p-2 theme-text-muted hover:theme-text-main theme-bg-card rounded-lg transition-all border theme-border">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dynamic Tab Content Container -->
+            <div id="content-container" class="flex-1 overflow-y-auto p-6 relative">
+                
+                <!-- 1. DASHBOARD VIEW -->
+                <div id="view-dashboard" class="tab-view space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl relative overflow-hidden backdrop-blur">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs font-medium theme-text-muted uppercase tracking-wider">Today's Sales</p>
+                                    <h3 class="text-2xl font-bold theme-text-main mt-1" id="dash-today-sales">Rs. 0</h3>
+                                    <p class="text-xs text-emerald-500 mt-2 flex items-center gap-1 font-medium">
+                                        <i data-lucide="trending-up" class="w-3.5 h-3.5"></i> Live Cash & Credit
+                                    </p>
+                                </div>
+                                <div class="theme-bg-accent-soft p-3 rounded-xl border theme-border-accent theme-text-accent">
+                                    <i data-lucide="banknote" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl relative overflow-hidden backdrop-blur">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs font-medium theme-text-muted uppercase tracking-wider">Est. Profit Today</p>
+                                    <h3 class="text-2xl font-bold text-emerald-500 mt-1" id="dash-today-profit">Rs. 0</h3>
+                                    <p class="text-xs theme-text-muted mt-2">Margin calculated on cost</p>
+                                </div>
+                                <div class="bg-emerald-500/10 p-3 rounded-xl border border-emerald-500/20 text-emerald-500">
+                                    <i data-lucide="coins" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl relative overflow-hidden backdrop-blur">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs font-medium theme-text-muted uppercase tracking-wider">Low Stock Warning</p>
+                                    <h3 class="text-2xl font-bold text-amber-500 mt-1" id="dash-low-stock-count">0</h3>
+                                    <p class="text-xs text-amber-500 mt-2 font-medium">Items need restocking</p>
+                                </div>
+                                <div class="bg-amber-500/10 p-3 rounded-xl border border-amber-500/20 text-amber-500">
+                                    <i data-lucide="alert-triangle" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl relative overflow-hidden backdrop-blur">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <p class="text-xs font-medium theme-text-muted uppercase tracking-wider">Udhar Receivables</p>
+                                    <h3 class="text-2xl font-bold text-rose-500 mt-1" id="dash-udhar-balance">Rs. 0</h3>
+                                    <p class="text-xs text-rose-500 mt-2 font-medium">Customer Credit Balance</p>
+                                </div>
+                                <div class="bg-rose-500/10 p-3 rounded-xl border border-rose-500/20 text-rose-500">
+                                    <i data-lucide="book-marked" class="w-6 h-6"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Chart & Shortcuts -->
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 theme-bg-card border theme-border rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-base font-semibold theme-text-main flex items-center gap-2">
+                                    <i data-lucide="line-chart" class="w-5 h-5 theme-text-accent"></i>
+                                    Sales Performance Trend (7 Days)
+                                </h3>
+                                <span class="text-xs theme-bg-main theme-text-muted px-2.5 py-1 rounded-md border theme-border">Weekly Analytics</span>
+                            </div>
+                            <div class="h-64 w-full">
+                                <canvas id="salesTrendChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="theme-bg-card border theme-border rounded-2xl p-5 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-base font-semibold theme-text-main mb-4 flex items-center gap-2">
+                                    <i data-lucide="zap" class="w-5 h-5 text-amber-500"></i>
+                                    Quick Actions
+                                </h3>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="switchTab('pos')" class="p-3 theme-bg-main border theme-border rounded-xl text-left transition-all hover:border-amber-500 group">
+                                        <div class="w-8 h-8 rounded-lg theme-bg-accent-soft theme-text-accent flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+                                        </div>
+                                        <p class="text-xs font-semibold theme-text-main">POS Billing</p>
+                                        <p class="text-[10px] theme-text-muted">Open Counter</p>
+                                    </button>
+                                    <button onclick="openAddProductModal()" class="p-3 theme-bg-main border theme-border rounded-xl text-left transition-all hover:border-emerald-500 group">
+                                        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                            <i data-lucide="plus" class="w-4 h-4"></i>
+                                        </div>
+                                        <p class="text-xs font-semibold theme-text-main">Add Product</p>
+                                        <p class="text-[10px] theme-text-muted">New Stock</p>
+                                    </button>
+                                    <button onclick="switchTab('udhar')" class="p-3 theme-bg-main border theme-border rounded-xl text-left transition-all hover:border-rose-500 group">
+                                        <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                            <i data-lucide="user-check" class="w-4 h-4"></i>
+                                        </div>
+                                        <p class="text-xs font-semibold theme-text-main">Udhar Vasuli</p>
+                                        <p class="text-[10px] theme-text-muted">Collect Credit</p>
+                                    </button>
+                                    <button onclick="openPOModal()" class="p-3 theme-bg-main border theme-border rounded-xl text-left transition-all hover:border-indigo-500 group">
+                                        <div class="w-8 h-8 rounded-lg bg-indigo-500/10 text-indigo-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform">
+                                            <i data-lucide="package-plus" class="w-4 h-4"></i>
+                                        </div>
+                                        <p class="text-xs font-semibold theme-text-main">Restock Items</p>
+                                        <p class="text-[10px] theme-text-muted">Purchase Order</p>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 theme-bg-accent-soft border theme-border-accent rounded-xl flex items-center gap-3">
+                                <i data-lucide="info" class="w-5 h-5 theme-text-accent flex-shrink-0"></i>
+                                <p class="text-xs theme-text-main">Press <kbd class="theme-bg-main px-1.5 py-0.5 rounded border theme-border font-mono">F2</kbd> anywhere to jump to POS counter.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Low Stock & Expiry -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="theme-bg-card border theme-border rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-sm font-semibold theme-text-main flex items-center gap-2">
+                                    <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i>
+                                    Low Stock Alerts
+                                </h3>
+                                <button onclick="switchTab('inventory')" class="text-xs theme-text-accent hover:underline">View Inventory</button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="theme-table-header theme-text-muted uppercase border-b theme-border">
+                                        <tr>
+                                            <th class="p-2.5">Item Name</th>
+                                            <th class="p-2.5">Category</th>
+                                            <th class="p-2.5 text-center">Stock Left</th>
+                                            <th class="p-2.5 text-right">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dash-low-stock-tbody" class="divide-y theme-border"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="theme-bg-card border theme-border rounded-2xl p-5">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="text-sm font-semibold theme-text-main flex items-center gap-2">
+                                    <i data-lucide="calendar-x" class="w-4 h-4 text-rose-500"></i>
+                                    Near Expiry Items (Within 30 Days)
+                                </h3>
+                                <span class="text-xs theme-text-muted">30-Day Threshold</span>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="theme-table-header theme-text-muted uppercase border-b theme-border">
+                                        <tr>
+                                            <th class="p-2.5">Item Name</th>
+                                            <th class="p-2.5">Expiry Date</th>
+                                            <th class="p-2.5 text-center">Stock</th>
+                                            <th class="p-2.5 text-right">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dash-expiry-tbody" class="divide-y theme-border"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. POS BILLING COUNTER VIEW -->
+                <div id="view-pos" class="tab-view hidden h-[calc(100vh-7rem)] flex flex-col lg:flex-row gap-5 overflow-hidden">
+                    <!-- Left Catalog -->
+                    <div class="flex-1 flex flex-col h-full overflow-hidden theme-bg-card border theme-border rounded-2xl p-4">
+                        <div class="flex gap-3 mb-3">
+                            <div class="relative flex-1">
+                                <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-3 theme-text-muted"></i>
+                                <input type="text" id="pos-search-input" onkeyup="renderPOSProducts()" placeholder="Scan barcode or type name (e.g., Lays, Cola, Samosa)..." class="w-full theme-bg-input border theme-border theme-text-main pl-11 pr-4 py-2.5 rounded-xl text-sm focus:outline-none border-teal-500">
+                            </div>
+                            <button onclick="clearPOSSearch()" class="px-3.5 py-2.5 theme-bg-main hover:opacity-80 rounded-xl text-xs theme-text-main font-medium border theme-border">Clear</button>
+                        </div>
+
+                        <div id="pos-categories-pills" class="flex items-center gap-2 overflow-x-auto pb-2 mb-3 scrollbar-none flex-shrink-0"></div>
+
+                        <div class="flex-1 overflow-y-auto pr-1">
+                            <div id="pos-product-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right Cart -->
+                    <div class="w-full lg:w-[420px] h-full flex flex-col theme-bg-sidebar border theme-border rounded-2xl p-4 shadow-2xl flex-shrink-0">
+                        <div class="flex items-center justify-between pb-3 border-b theme-border">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="shopping-cart" class="w-5 h-5 theme-text-accent"></i>
+                                <h3 class="font-bold theme-text-main text-base">Current Cart</h3>
+                            </div>
+                            <button onclick="clearCart()" class="text-xs text-rose-500 hover:underline font-medium flex items-center gap-1">
+                                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Clear Cart
+                            </button>
+                        </div>
+
+                        <div id="pos-cart-items-container" class="flex-1 overflow-y-auto py-3 space-y-2.5 my-1 pr-1 divide-y theme-border"></div>
+
+                        <div class="border-t theme-border pt-3 space-y-2.5">
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-[11px] theme-text-muted font-medium block mb-1">Customer (Grahak)</label>
+                                    <select id="pos-customer-select" class="w-full theme-bg-input border theme-border theme-text-main rounded-lg px-2.5 py-1.5 text-xs focus:outline-none"></select>
+                                </div>
+                                <div>
+                                    <label class="text-[11px] theme-text-muted font-medium block mb-1">Payment Method</label>
+                                    <select id="pos-payment-method" onchange="togglePaymentInputs()" class="w-full theme-bg-input border theme-border theme-text-main rounded-lg px-2.5 py-1.5 text-xs focus:outline-none">
+                                        <option value="cash">Cash (Naqad)</option>
+                                        <option value="udhar">Udhar (Credit)</option>
+                                        <option value="card">Debit / Credit Card</option>
+                                        <option value="online">JazzCash / EasyPaisa</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="text-[11px] theme-text-muted font-medium block mb-1">Discount (Rs.)</label>
+                                    <input type="number" id="pos-discount-input" oninput="calculateCartTotals()" value="0" min="0" class="w-full theme-bg-input border theme-border theme-text-main rounded-lg px-2.5 py-1.5 text-xs focus:outline-none">
+                                </div>
+                                <div>
+                                    <label class="text-[11px] theme-text-muted font-medium block mb-1">Cash Received (Rs.)</label>
+                                    <input type="number" id="pos-cash-received" oninput="calculateCartTotals()" placeholder="0" class="w-full theme-bg-input border theme-border theme-text-main rounded-lg px-2.5 py-1.5 text-xs focus:outline-none">
+                                </div>
+                            </div>
+
+                            <div class="theme-bg-main border theme-border p-3 rounded-xl space-y-1.5 text-xs">
+                                <div class="flex justify-between theme-text-muted">
+                                    <span>Subtotal:</span>
+                                    <span id="cart-subtotal-text" class="theme-text-main font-medium">Rs. 0</span>
+                                </div>
+                                <div class="flex justify-between theme-text-muted">
+                                    <span>Discount:</span>
+                                    <span id="cart-discount-text" class="text-rose-500 font-medium">- Rs. 0</span>
+                                </div>
+                                <div class="flex justify-between theme-text-muted border-t theme-border pt-1">
+                                    <span class="font-bold theme-text-main text-sm">Net Total:</span>
+                                    <span id="cart-net-total-text" class="font-bold theme-text-accent text-base">Rs. 0</span>
+                                </div>
+                                <div id="cart-change-row" class="flex justify-between text-emerald-500 text-xs font-semibold pt-1 border-t theme-border hidden">
+                                    <span>Return Change:</span>
+                                    <span id="cart-change-text">Rs. 0</span>
+                                </div>
+                            </div>
+
+                            <button onclick="processCheckout()" id="btn-checkout" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:opacity-90 text-white font-bold rounded-xl shadow-lg text-sm flex items-center justify-center gap-2 transition-all">
+                                <i data-lucide="check-circle-2" class="w-5 h-5"></i> Complete Sale & Print Bill
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. INVENTORY MANAGEMENT VIEW -->
+                <div id="view-inventory" class="tab-view hidden space-y-5">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 theme-bg-card border theme-border p-4 rounded-2xl">
+                        <div class="flex flex-col md:flex-row items-center gap-3 w-full md:w-auto">
+                            <div class="relative w-full md:w-72">
+                                <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 theme-text-muted"></i>
+                                <input type="text" id="inv-search-input" onkeyup="renderInventoryTable()" placeholder="Search product or barcode..." class="w-full theme-bg-input border theme-border theme-text-main pl-9 pr-3 py-2 rounded-xl text-xs focus:outline-none">
+                            </div>
+                            <select id="inv-category-filter" onchange="renderInventoryTable()" class="w-full md:w-48 theme-bg-input border theme-border theme-text-main rounded-xl px-3 py-2 text-xs focus:outline-none">
+                                <option value="all">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2 w-full md:w-auto">
+                            <button onclick="openAddProductModal()" class="flex-1 md:flex-none flex items-center justify-center gap-2 theme-bg-accent hover:opacity-90 text-white font-medium text-xs px-4 py-2.5 rounded-xl shadow-md transition-all">
+                                <i data-lucide="plus" class="w-4 h-4"></i> Add New Product
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="theme-bg-card border theme-border rounded-2xl overflow-hidden shadow-xl">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs theme-text-main">
+                                <thead class="theme-table-header theme-text-muted uppercase tracking-wider border-b theme-border font-semibold">
+                                    <tr>
+                                        <th class="p-3.5">Barcode / ID</th>
+                                        <th class="p-3.5">Product Name</th>
+                                        <th class="p-3.5">Category</th>
+                                        <th class="p-3.5 text-right">Cost Price</th>
+                                        <th class="p-3.5 text-right">Sale Price</th>
+                                        <th class="p-3.5 text-center">In Stock</th>
+                                        <th class="p-3.5">Expiry Date</th>
+                                        <th class="p-3.5 text-center">Status</th>
+                                        <th class="p-3.5 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="inventory-tbody" class="divide-y theme-border"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. UDHAR KHATA (CREDIT LEDGER) VIEW -->
+                <div id="view-udhar" class="tab-view hidden space-y-5">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs theme-text-muted uppercase font-medium">Udhar Customers</p>
+                                <h3 class="text-2xl font-bold theme-text-main mt-1" id="udhar-total-customers">0</h3>
+                            </div>
+                            <div class="p-3 bg-blue-500/10 text-blue-500 border border-blue-500/20 rounded-xl">
+                                <i data-lucide="users" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs theme-text-muted uppercase font-medium">Total Credit Receivable</p>
+                                <h3 class="text-2xl font-bold text-rose-500 mt-1" id="udhar-total-receivables">Rs. 0</h3>
+                            </div>
+                            <div class="p-3 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-xl">
+                                <i data-lucide="arrow-down-left" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl flex items-center justify-between">
+                            <div>
+                                <p class="text-xs theme-text-muted uppercase font-medium">Add Customer</p>
+                                <button onclick="openAddCustomerModal()" class="mt-2 flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-3.5 py-2 rounded-xl transition-all">
+                                    <i data-lucide="user-plus" class="w-4 h-4"></i> New Account
+                                </button>
+                            </div>
+                            <div class="p-3 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-xl">
+                                <i data-lucide="wallet" class="w-6 h-6"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <!-- Customers List -->
+                        <div class="theme-bg-card border theme-border rounded-2xl p-4 flex flex-col h-[500px]">
+                            <div class="flex items-center justify-between pb-3 border-b theme-border mb-3">
+                                <h3 class="text-sm font-semibold theme-text-main flex items-center gap-2">
+                                    <i data-lucide="book" class="w-4 h-4 theme-text-accent"></i> Customers
+                                </h3>
+                                <input type="text" id="udhar-search-input" onkeyup="renderUdharCustomerList()" placeholder="Search..." class="theme-bg-input border theme-border text-xs px-2.5 py-1 rounded-lg theme-text-main w-32 focus:outline-none">
+                            </div>
+                            <div id="udhar-customers-list" class="flex-1 overflow-y-auto space-y-2 pr-1"></div>
+                        </div>
+
+                        <!-- Customer Details Ledger -->
+                        <div class="lg:col-span-2 theme-bg-card border theme-border rounded-2xl p-5 flex flex-col h-[500px]">
+                            <div id="udhar-ledger-header" class="flex items-center justify-between pb-3 border-b theme-border mb-4">
+                                <div>
+                                    <h3 class="text-base font-bold theme-text-main" id="udhar-ledger-name">Select a Customer Account</h3>
+                                    <p class="text-xs theme-text-muted" id="udhar-ledger-phone">Phone: ---</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <div class="text-right">
+                                        <p class="text-[10px] theme-text-muted uppercase">Current Udhar</p>
+                                        <p class="text-lg font-bold text-rose-500" id="udhar-ledger-balance">Rs. 0</p>
+                                    </div>
+                                    <button id="btn-udhar-payment" onclick="openUdharPaymentModal()" disabled class="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-40 text-white font-semibold text-xs px-3.5 py-2.5 rounded-xl flex items-center gap-1.5 transition-all">
+                                        <i data-lucide="hand-coins" class="w-4 h-4"></i> Collect Payment
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="flex-1 overflow-y-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="theme-table-header theme-text-muted uppercase border-b theme-border">
+                                        <tr>
+                                            <th class="p-2.5">Date & Time</th>
+                                            <th class="p-2.5">Description</th>
+                                            <th class="p-2.5 text-right">Debit (Udhar)</th>
+                                            <th class="p-2.5 text-right">Credit (Wapas)</th>
+                                            <th class="p-2.5 text-right">Balance</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="udhar-ledger-tbody" class="divide-y theme-border">
+                                        <tr>
+                                            <td colspan="5" class="text-center py-10 theme-text-muted">Select a customer from the left list to view ledger statement.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. SUPPLIERS & ORDERS VIEW -->
+                <div id="view-suppliers" class="tab-view hidden space-y-5">
+                    <div class="flex items-center justify-between theme-bg-card border theme-border p-4 rounded-2xl">
+                        <div class="flex items-center gap-3">
+                            <i data-lucide="truck" class="w-6 h-6 text-indigo-500"></i>
+                            <div>
+                                <h3 class="text-base font-bold theme-text-main">Suppliers & Purchase Inward</h3>
+                                <p class="text-xs theme-text-muted">Manage vendors, orders & restock inventory</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2">
+                            <button onclick="openAddSupplierModal()" class="theme-bg-main hover:opacity-80 theme-text-main font-medium text-xs px-3.5 py-2 rounded-xl border theme-border transition-all">
+                                + Add Supplier
+                            </button>
+                            <button onclick="openPOModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs px-4 py-2 rounded-xl shadow-lg transition-all flex items-center gap-1.5">
+                                <i data-lucide="package-plus" class="w-4 h-4"></i> Purchase Order
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="theme-bg-card border theme-border rounded-2xl p-4 flex flex-col h-[500px]">
+                            <h3 class="text-sm font-semibold theme-text-main pb-3 border-b theme-border mb-3">Registered Vendors</h3>
+                            <div id="suppliers-list-container" class="flex-1 overflow-y-auto space-y-2.5 pr-1"></div>
+                        </div>
+
+                        <div class="lg:col-span-2 theme-bg-card border theme-border rounded-2xl p-5 flex flex-col h-[500px]">
+                            <h3 class="text-sm font-semibold theme-text-main pb-3 border-b theme-border mb-3">Purchase Order History</h3>
+                            <div class="flex-1 overflow-y-auto">
+                                <table class="w-full text-left text-xs">
+                                    <thead class="theme-table-header theme-text-muted uppercase border-b theme-border">
+                                        <tr>
+                                            <th class="p-2.5">PO ID</th>
+                                            <th class="p-2.5">Supplier</th>
+                                            <th class="p-2.5">Date</th>
+                                            <th class="p-2.5 text-right">Total Cost</th>
+                                            <th class="p-2.5 text-center">Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="po-history-tbody" class="divide-y theme-border"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. REPORTS & ANALYTICS VIEW -->
+                <div id="view-reports" class="tab-view hidden space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl">
+                            <p class="text-xs theme-text-muted uppercase font-medium">All-Time Revenue</p>
+                            <h3 class="text-2xl font-bold theme-text-main mt-1" id="report-total-revenue">Rs. 0</h3>
+                        </div>
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl">
+                            <p class="text-xs theme-text-muted uppercase font-medium">Total Net Profit</p>
+                            <h3 class="text-2xl font-bold text-emerald-500 mt-1" id="report-total-profit">Rs. 0</h3>
+                        </div>
+                        <div class="theme-bg-card border theme-border p-5 rounded-2xl">
+                            <p class="text-xs theme-text-muted uppercase font-medium">Total Orders Completed</p>
+                            <h3 class="text-2xl font-bold theme-text-accent mt-1" id="report-total-orders">0</h3>
+                        </div>
+                    </div>
+
+                    <div class="theme-bg-card border theme-border rounded-2xl p-5">
+                        <h3 class="text-sm font-semibold theme-text-main mb-4">Complete Sales Logs & Transactions</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead class="theme-table-header theme-text-muted uppercase border-b theme-border">
+                                    <tr>
+                                        <th class="p-3">Order ID</th>
+                                        <th class="p-3">Date & Time</th>
+                                        <th class="p-3">Customer</th>
+                                        <th class="p-3">Payment</th>
+                                        <th class="p-3 text-right">Items</th>
+                                        <th class="p-3 text-right">Total Amount</th>
+                                        <th class="p-3 text-right">Profit</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="reports-sales-tbody" class="divide-y theme-border"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 7. SETTINGS & BACKUP VIEW -->
+                <div id="view-settings" class="tab-view hidden space-y-6 max-w-4xl mx-auto">
+                    <div class="theme-bg-card border theme-border rounded-2xl p-6 space-y-4">
+                        <h3 class="text-base font-bold theme-text-main flex items-center gap-2">
+                            <i data-lucide="store" class="w-5 h-5 theme-text-accent"></i>
+                            Store Profile & General Settings
+                        </h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-xs theme-text-muted block mb-1">Shop / Tuck Shop Name</label>
+                                <input type="text" id="setting-shop-name" class="w-full theme-bg-input border theme-border text-sm theme-text-main p-2.5 rounded-xl focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-xs theme-text-muted block mb-1">Contact Phone</label>
+                                <input type="text" id="setting-shop-phone" class="w-full theme-bg-input border theme-border text-sm theme-text-main p-2.5 rounded-xl focus:outline-none">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="text-xs theme-text-muted block mb-1">Shop Address / Header Footer</label>
+                                <input type="text" id="setting-shop-address" class="w-full theme-bg-input border theme-border text-sm theme-text-main p-2.5 rounded-xl focus:outline-none">
+                            </div>
+                        </div>
+                        <button onclick="saveSettings()" class="theme-bg-accent hover:opacity-90 text-white font-semibold text-xs px-5 py-2.5 rounded-xl shadow-md transition-all">
+                            Save Shop Details
+                        </button>
+                    </div>
+
+                    <div class="theme-bg-card border theme-border rounded-2xl p-6 space-y-4">
+                        <h3 class="text-base font-bold theme-text-main flex items-center gap-2">
+                            <i data-lucide="database" class="w-5 h-5 text-emerald-500"></i>
+                            Data Backup & Restoration
+                        </h3>
+                        <p class="text-xs theme-text-muted">Export your store's database as JSON file for backup or restore previous data.</p>
+                        <div class="flex flex-wrap gap-3">
+                            <button onclick="exportDataJSON()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-2">
+                                <i data-lucide="download" class="w-4 h-4"></i> Download Full Backup
+                            </button>
+                            <label class="bg-slate-700 hover:bg-slate-600 text-white font-semibold text-xs px-4 py-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-2">
+                                <i data-lucide="upload" class="w-4 h-4"></i> Import Restore File
+                                <input type="file" id="import-file-input" onchange="importDataJSON(event)" class="hidden" accept=".json">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL: ADD / EDIT PRODUCT -->
+    <div id="modal-product" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="theme-bg-card border theme-border w-full max-w-lg rounded-2xl p-6 shadow-2xl relative space-y-4">
+            <div class="flex justify-between items-center border-b theme-border pb-3">
+                <h3 class="font-bold text-base theme-text-main" id="modal-product-title">Add New Product</h3>
+                <button onclick="closeModal('modal-product')" class="theme-text-muted hover:theme-text-main"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form id="form-product" onsubmit="saveProduct(event)" class="space-y-3">
+                <input type="hidden" id="prod-id">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs theme-text-muted block mb-1">Barcode / Code</label>
+                        <input type="text" id="prod-barcode" required class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs theme-text-muted block mb-1">Product Name</label>
+                        <input type="text" id="prod-name" required class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs theme-text-muted block mb-1">Category</label>
+                        <input type="text" id="prod-category" required placeholder="Snacks, Drinks, Snacks..." class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs theme-text-muted block mb-1">Stock Quantity</label>
+                        <input type="number" id="prod-stock" required min="0" class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs theme-text-muted block mb-1">Cost Price (Rs.)</label>
+                        <input type="number" id="prod-cost" required min="0" step="0.01" class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs theme-text-muted block mb-1">Sale Price (Rs.)</label>
+                        <input type="number" id="prod-price" required min="0" step="0.01" class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Expiry Date (Optional)</label>
+                    <input type="date" id="prod-expiry" class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t theme-border">
+                    <button type="button" onclick="closeModal('modal-product')" class="px-4 py-2 theme-bg-main border theme-border theme-text-muted text-xs font-semibold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 theme-bg-accent text-white text-xs font-semibold rounded-xl shadow-md">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD CUSTOMER -->
+    <div id="modal-customer" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="theme-bg-card border theme-border w-full max-w-md rounded-2xl p-6 shadow-2xl relative space-y-4">
+            <div class="flex justify-between items-center border-b theme-border pb-3">
+                <h3 class="font-bold text-base theme-text-main">Add Udhar Customer Account</h3>
+                <button onclick="closeModal('modal-customer')" class="theme-text-muted hover:theme-text-main"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form onsubmit="saveCustomer(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Full Name</label>
+                    <input type="text" id="cust-name" required class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Phone Number (WhatsApp)</label>
+                    <input type="text" id="cust-phone" required placeholder="03001234567" class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Initial Udhar Balance (Rs.)</label>
+                    <input type="number" id="cust-balance" value="0" min="0" class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t theme-border">
+                    <button type="button" onclick="closeModal('modal-customer')" class="px-4 py-2 theme-bg-main border theme-border theme-text-muted text-xs font-semibold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-xl shadow-md">Create Customer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: UDHAR PAYMENT -->
+    <div id="modal-udhar-payment" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="theme-bg-card border theme-border w-full max-w-sm rounded-2xl p-6 shadow-2xl relative space-y-4">
+            <div class="flex justify-between items-center border-b theme-border pb-3">
+                <h3 class="font-bold text-base theme-text-main">Collect Udhar Payment</h3>
+                <button onclick="closeModal('modal-udhar-payment')" class="theme-text-muted hover:theme-text-main"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form onsubmit="submitUdharPayment(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Payment Amount (Rs.)</label>
+                    <input type="number" id="udhar-pay-amount" required min="1" class="w-full theme-bg-input border theme-border text-base font-bold theme-text-main p-2.5 rounded-xl focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Note / Reference</label>
+                    <input type="text" id="udhar-pay-note" placeholder="Cash recovery..." class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t theme-border">
+                    <button type="button" onclick="closeModal('modal-udhar-payment')" class="px-4 py-2 theme-bg-main border theme-border theme-text-muted text-xs font-semibold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-xl shadow-md">Submit Payment</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: ADD SUPPLIER -->
+    <div id="modal-supplier" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="theme-bg-card border theme-border w-full max-w-md rounded-2xl p-6 shadow-2xl relative space-y-4">
+            <div class="flex justify-between items-center border-b theme-border pb-3">
+                <h3 class="font-bold text-base theme-text-main">Add New Supplier</h3>
+                <button onclick="closeModal('modal-supplier')" class="theme-text-muted hover:theme-text-main"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form onsubmit="saveSupplier(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Company / Supplier Name</label>
+                    <input type="text" id="supp-name" required class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Contact Phone</label>
+                    <input type="text" id="supp-phone" required class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                </div>
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Category Provided</label>
+                    <input type="text" id="supp-category" placeholder="Beverages, Biscuits..." class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t theme-border">
+                    <button type="button" onclick="closeModal('modal-supplier')" class="px-4 py-2 theme-bg-main border theme-border theme-text-muted text-xs font-semibold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl shadow-md">Save Vendor</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: CREATE PURCHASE ORDER -->
+    <div id="modal-po" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="theme-bg-card border theme-border w-full max-w-lg rounded-2xl p-6 shadow-2xl relative space-y-4">
+            <div class="flex justify-between items-center border-b theme-border pb-3">
+                <h3 class="font-bold text-base theme-text-main">Restock Purchase Order</h3>
+                <button onclick="closeModal('modal-po')" class="theme-text-muted hover:theme-text-main"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <form onsubmit="submitPurchaseOrder(event)" class="space-y-3">
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Select Supplier</label>
+                    <select id="po-supplier-select" required class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none"></select>
+                </div>
+                <div>
+                    <label class="text-xs theme-text-muted block mb-1">Select Product to Restock</label>
+                    <select id="po-product-select" required class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none"></select>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs theme-text-muted block mb-1">Quantity Added</label>
+                        <input type="number" id="po-quantity" required min="1" class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="text-xs theme-text-muted block mb-1">Cost Per Item (Rs.)</label>
+                        <input type="number" id="po-cost" required min="0" step="0.01" class="w-full theme-bg-input border theme-border text-xs theme-text-main p-2.5 rounded-xl focus:outline-none">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t theme-border">
+                    <button type="button" onclick="closeModal('modal-po')" class="px-4 py-2 theme-bg-main border theme-border theme-text-muted text-xs font-semibold rounded-xl">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-xs font-semibold rounded-xl shadow-md">Receive Stock</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: RECEIPT PRINT DISPLAY -->
+    <div id="modal-receipt" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-white text-slate-900 w-80 rounded-2xl p-5 shadow-2xl relative space-y-3 font-mono text-xs">
+            <div id="printable-receipt">
+                <div class="text-center pb-2 border-b border-dashed border-slate-400">
+                    <h2 class="font-bold text-sm uppercase" id="rec-shop-name">APNA TUCK SHOP</h2>
+                    <p class="text-[10px]" id="rec-shop-address">Campus Tuck Shop Counter</p>
+                    <p class="text-[10px]" id="rec-shop-phone">Ph: 0300-1234567</p>
+                    <p class="text-[10px] mt-1" id="rec-date-id">Date: --/--/---- | Order #000</p>
+                </div>
+
+                <div class="py-2 border-b border-dashed border-slate-400">
+                    <div class="flex justify-between font-bold text-[10px] pb-1">
+                        <span>ITEM</span>
+                        <span>QTY x PRICE</span>
+                        <span>AMT</span>
+                    </div>
+                    <div id="rec-items-list" class="space-y-1 text-[11px]"></div>
+                </div>
+
+                <div class="py-2 border-b border-dashed border-slate-400 space-y-1">
+                    <div class="flex justify-between">
+                        <span>Subtotal:</span>
+                        <span id="rec-subtotal">Rs. 0</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>Discount:</span>
+                        <span id="rec-discount">Rs. 0</span>
+                    </div>
+                    <div class="flex justify-between font-bold text-sm">
+                        <span>TOTAL:</span>
+                        <span id="rec-total">Rs. 0</span>
+                    </div>
+                    <div class="flex justify-between text-[10px]">
+                        <span>Payment:</span>
+                        <span id="rec-payment-type" class="uppercase">CASH</span>
+                    </div>
+                </div>
+
+                <div class="text-center pt-2 text-[10px]">
+                    <p>Thank you for visiting!</p>
+                    <p class="text-[8px] mt-0.5">Software Powered by Apna Tuck Shop</p>
+                </div>
+            </div>
+
+            <div class="flex gap-2 pt-2 border-t border-slate-200 no-print">
+                <button onclick="closeModal('modal-receipt')" class="flex-1 py-2 bg-slate-200 text-slate-800 rounded-xl font-sans font-semibold text-xs">Close</button>
+                <button onclick="window.print()" class="flex-1 py-2 bg-emerald-600 text-white rounded-xl font-sans font-semibold text-xs flex items-center justify-center gap-1">
+                    <i data-lucide="printer" class="w-4 h-4"></i> Print Bill
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION LOGIC JS -->
+    <script>
+        // Initial Database Mock Structure
+        const initialDB = {
+            settings: {
+                theme: 'dark-slate',
+                shopName: 'Apna Tuck Shop',
+                shopPhone: '0300-9876543',
+                shopAddress: 'Block B, Main Campus Tuck Shop'
+            },
+            products: [
+                { id: '101', barcode: '8901001', name: 'Lays Classic Salted 40g', category: 'Snacks', cost: 40, price: 50, stock: 45, expiry: '2026-12-31' },
+                { id: '102', barcode: '8901002', name: 'Coca Cola 345ml', category: 'Beverages', cost: 55, price: 70, stock: 8, expiry: '2026-11-15' },
+                { id: '103', barcode: '8901003', name: 'Super Biscuit Half Rolls', category: 'Biscuits', cost: 25, price: 30, stock: 60, expiry: '2027-02-28' },
+                { id: '104', barcode: '8901004', name: 'Fresh Chicken Samosa', category: 'Fresh Snacks', cost: 30, price: 40, stock: 25, expiry: '2026-10-25' },
+                { id: '105', barcode: '8901005', name: 'Dairy Milk Chocolate 18g', category: 'Chocolates', cost: 42, price: 50, stock: 5, expiry: '2026-10-30' },
+                { id: '106', barcode: '8901006', name: 'Nestle Pure Life 500ml', category: 'Beverages', cost: 40, price: 50, stock: 100, expiry: '2027-08-10' }
+            ],
+            customers: [
+                { id: 'c1', name: 'General Walk-in Customer', phone: '00000000000', balance: 0 },
+                { id: 'c2', name: 'Ali Raza (Student)', phone: '03012345678', balance: 450 },
+                { id: 'c3', name: 'Prof. Kamran Staff', phone: '03219876543', balance: 1200 }
+            ],
+            suppliers: [
+                { id: 's1', name: 'PepsiCo & Lays Distributor', phone: '03001112223', category: 'Snacks & Soft Drinks' },
+                { id: 's2', name: 'National Bakers Wholesale', phone: '03124445556', category: 'Biscuits & Bakery' }
+            ],
+            ledger: [
+                { id: 'l1', customerId: 'c2', date: '2026-10-20 14:30', description: 'Canteen Udhar Purchase', debit: 450, credit: 0, balance: 450 },
+                { id: 'l2', customerId: 'c3', date: '2026-10-18 11:15', description: 'Monthly Staff Account Sale', debit: 1200, credit: 0, balance: 1200 }
+            ],
+            orders: [],
+            purchaseOrders: []
+        };
+
+        // State Machine
+        let db = JSON.parse(localStorage.getItem('tuckshop_db')) || initialDB;
+        let cart = [];
+        let selectedCustomerId = null;
+        let activeTab = 'dashboard';
+        let salesChart = null;
+
+        // Save DB to LocalStorage
+        function saveDB() {
+            localStorage.setItem('tuckshop_db', JSON.stringify(db));
+        }
+
+        // Initialize App
+        window.onload = function() {
+            applyTheme(db.settings.theme || 'dark-slate');
+            lucide.createIcons();
+            startClock();
+            switchTab('dashboard');
+            populateCustomerDropdown();
+            renderPOSCategories();
+            renderPOSProducts();
+            updateUdharBadge();
+        };
+
+        // Clock Function
+        function startClock() {
+            setInterval(() => {
+                const now = new Date();
+                const clock = document.getElementById('live-time-display');
+                if (clock) clock.textContent = now.toLocaleDateString('en-GB') + ' ' + now.toLocaleTimeString();
+            }, 1000);
+        }
+
+        // Theme Switcher Logic
+        function applyTheme(themeName) {
+            document.documentElement.setAttribute('data-theme', themeName);
+            db.settings.theme = themeName;
+            saveDB();
+            const selector = document.getElementById('theme-selector');
+            if (selector) selector.value = themeName;
+            
+            // Re-render chart with appropriate colors if chart exists
+            if (salesChart) {
+                renderSalesChart();
+            }
+        }
+
+        function changeAppTheme(themeName) {
+            applyTheme(themeName);
+            showToast('Theme updated to ' + themeName.replace('-', ' ').toUpperCase(), 'info');
+        }
+
+        // Toast Messages
+        function showToast(msg, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const color = type === 'success' ? 'border-emerald-500 bg-emerald-950/90 text-emerald-200' : 
+                          type === 'error' ? 'border-rose-500 bg-rose-950/90 text-rose-200' : 'border-cyan-500 bg-slate-900 text-cyan-200';
+            toast.className = `p-3.5 rounded-xl border text-xs font-semibold shadow-2xl transition-all duration-300 flex items-center gap-2 ${color}`;
+            toast.innerHTML = `<i data-lucide="${type === 'success' ? 'check-circle' : 'info'}" class="w-4 h-4"></i> ${msg}`;
+            container.appendChild(toast);
+            lucide.createIcons();
+            setTimeout(() => toast.remove(), 3000);
+        }
+
+        // Keyboard Shortcut F2
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'F2') {
+                e.preventDefault();
+                switchTab('pos');
+            }
+        });
+
+        // Tab Switching Engine
+        function switchTab(tabId) {
+            activeTab = tabId;
+            document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('theme-bg-accent-soft', 'theme-text-accent', 'font-bold'));
+
+            const activeView = document.getElementById(`view-${tabId}`);
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            
+            if (activeView) activeView.classList.remove('hidden');
+            if (activeNav) activeNav.classList.add('theme-bg-accent-soft', 'theme-text-accent', 'font-bold');
+
+            const pageTitle = document.getElementById('page-title');
+            if (pageTitle) pageTitle.textContent = tabId.charAt(0).toUpperCase() + tabId.slice(1) + ' Overview';
+
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'pos') { renderPOSProducts(); focusPOSSearch(); }
+            if (tabId === 'inventory') renderInventoryTable();
+            if (tabId === 'udhar') renderUdharView();
+            if (tabId === 'suppliers') renderSuppliersView();
+            if (tabId === 'reports') renderReportsView();
+            if (tabId === 'settings') loadSettings();
+        }
+
+        // Modals Management
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.remove('hidden');
+        }
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        }
+
+        /* ---------------- DASHBOARD LOGIC ---------------- */
+        function renderDashboard() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayOrders = db.orders.filter(o => o.date.startsWith(todayStr));
+            
+            const todaySales = todayOrders.reduce((sum, o) => sum + o.netTotal, 0);
+            const todayProfit = todayOrders.reduce((sum, o) => sum + o.profit, 0);
+            
+            const lowStockItems = db.products.filter(p => p.stock <= 10);
+            const totalUdhar = db.customers.reduce((sum, c) => sum + c.balance, 0);
+
+            document.getElementById('dash-today-sales').textContent = `Rs. ${todaySales.toLocaleString()}`;
+            document.getElementById('dash-today-profit').textContent = `Rs. ${todayProfit.toLocaleString()}`;
+            document.getElementById('dash-low-stock-count').textContent = lowStockItems.length;
+            document.getElementById('dash-udhar-balance').textContent = `Rs. ${totalUdhar.toLocaleString()}`;
+
+            // Render Low Stock Table
+            const lowTbody = document.getElementById('dash-low-stock-tbody');
+            lowTbody.innerHTML = lowStockItems.length ? lowStockItems.slice(0, 5).map(p => `
+                <tr>
+                    <td class="p-2.5 font-semibold">${p.name}</td>
+                    <td class="p-2.5 theme-text-muted">${p.category}</td>
+                    <td class="p-2.5 text-center font-bold text-amber-500">${p.stock}</td>
+                    <td class="p-2.5 text-right"><button onclick="openPOModal('${p.id}')" class="text-xs text-indigo-400 hover:underline">Restock</button></td>
+                </tr>
+            `).join('') : `<tr><td colspan="4" class="text-center py-4 theme-text-muted">No low stock warnings.</td></tr>`;
+
+            // Render Expiry Table
+            const today = new Date();
+            const nearExpiry = db.products.filter(p => {
+                if (!p.expiry) return false;
+                const exp = new Date(p.expiry);
+                const diffDays = (exp - today) / (1000 * 3600 * 24);
+                return diffDays >= 0 && diffDays <= 30;
+            });
+
+            const expTbody = document.getElementById('dash-expiry-tbody');
+            expTbody.innerHTML = nearExpiry.length ? nearExpiry.map(p => `
+                <tr>
+                    <td class="p-2.5 font-semibold">${p.name}</td>
+                    <td class="p-2.5 text-rose-400 font-medium">${p.expiry}</td>
+                    <td class="p-2.5 text-center">${p.stock}</td>
+                    <td class="p-2.5 text-right"><span class="px-2 py-0.5 rounded-full text-[10px] bg-rose-500/10 text-rose-400 border border-rose-500/20">Expiring Soon</span></td>
+                </tr>
+            `).join('') : `<tr><td colspan="4" class="text-center py-4 theme-text-muted">No near expiry products.</td></tr>`;
+
+            renderSalesChart();
+        }
+
+        function renderSalesChart() {
+            const ctx = document.getElementById('salesTrendChart')?.getContext('2d');
+            if (!ctx) return;
+
+            const labels = [];
+            const salesData = [];
+            for (let i = 6; i >= 0; i--) {
+                const d = new Date();
+                d.setDate(d.getDate() - i);
+                const dateStr = d.toISOString().split('T')[0];
+                labels.push(d.toLocaleDateString('en-US', { weekday: 'short' }));
+                
+                const daySales = db.orders.filter(o => o.date.startsWith(dateStr)).reduce((s, o) => s + o.netTotal, 0);
+                salesData.push(daySales);
+            }
+
+            if (salesChart) salesChart.destroy();
+
+            const isLight = db.settings.theme === 'emerald-light';
+            const accentColor = isLight ? '#10b981' : (db.settings.theme === 'midnight-amber' ? '#f59e0b' : '#06b6d4');
+
+            salesChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Sales (Rs.)',
+                        data: salesData,
+                        borderColor: accentColor,
+                        backgroundColor: accentColor + '20',
+                        fill: true,
+                        tension: 0.35,
+                        borderWidth: 2.5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: isLight ? '#64748b' : '#94a3b8' } },
+                        y: { grid: { color: isLight ? '#e2e8f0' : '#334155' }, ticks: { color: isLight ? '#64748b' : '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        /* ---------------- POS BILLING LOGIC ---------------- */
+        function focusPOSSearch() {
+            setTimeout(() => document.getElementById('pos-search-input')?.focus(), 100);
+        }
+
+        function renderPOSCategories() {
+            const categories = ['All', ...new Set(db.products.map(p => p.category))];
+            const container = document.getElementById('pos-categories-pills');
+            container.innerHTML = categories.map(c => `
+                <button onclick="filterPOSCategory('${c}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold border theme-border whitespace-nowrap transition-all theme-bg-main theme-text-muted hover:theme-text-main">
+                    ${c}
+                </button>
+            `).join('');
+        }
+
+        let selectedPOSCategory = 'All';
+        function filterPOSCategory(cat) {
+            selectedPOSCategory = cat;
+            renderPOSProducts();
+        }
+
+        function renderPOSProducts() {
+            const query = document.getElementById('pos-search-input')?.value.toLowerCase() || '';
+            const grid = document.getElementById('pos-product-grid');
+            
+            const filtered = db.products.filter(p => {
+                const matchesCat = selectedPOSCategory === 'All' || p.category === selectedPOSCategory;
+                const matchesSearch = p.name.toLowerCase().includes(query) || p.barcode.toLowerCase().includes(query);
+                return matchesCat && matchesSearch;
+            });
+
+            grid.innerHTML = filtered.map(p => `
+                <div onclick="addToCart('${p.id}')" class="theme-bg-main border theme-border hover:theme-border-accent p-3 rounded-2xl cursor-pointer transition-all flex flex-col justify-between group shadow-sm">
+                    <div>
+                        <div class="flex justify-between items-start gap-1">
+                            <span class="text-[10px] theme-text-muted truncate">${p.category}</span>
+                            <span class="text-[10px] font-bold ${p.stock <= 5 ? 'text-rose-500' : 'theme-text-accent'}">${p.stock} in stock</span>
+                        </div>
+                        <h4 class="font-bold text-xs theme-text-main mt-1 line-clamp-2 leading-snug group-hover:theme-text-accent">${p.name}</h4>
+                    </div>
+                    <div class="mt-3 flex items-center justify-between pt-2 border-t theme-border">
+                        <span class="font-bold text-sm theme-text-main">Rs. ${p.price}</span>
+                        <div class="w-6 h-6 rounded-lg theme-bg-accent text-white flex items-center justify-center">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function clearPOSSearch() {
+            document.getElementById('pos-search-input').value = '';
+            selectedPOSCategory = 'All';
+            renderPOSProducts();
+        }
+
+        function addToCart(prodId) {
+            const product = db.products.find(p => p.id === prodId);
+            if (!product) return;
+            if (product.stock <= 0) {
+                showToast('Item Out of Stock!', 'error');
+                return;
+            }
+
+            const existing = cart.find(item => item.id === prodId);
+            if (existing) {
+                if (existing.qty + 1 > product.stock) {
+                    showToast('Stock Limit Reached!', 'error');
+                    return;
+                }
+                existing.qty += 1;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            renderCart();
+        }
+
+        function updateCartQty(prodId, delta) {
+            const item = cart.find(i => i.id === prodId);
+            if (!item) return;
+            const product = db.products.find(p => p.id === prodId);
+
+            if (delta > 0 && item.qty + delta > product.stock) {
+                showToast('Stock Limit Reached!', 'error');
+                return;
+            }
+
+            item.qty += delta;
+            if (item.qty <= 0) cart = cart.filter(i => i.id !== prodId);
+            renderCart();
+        }
+
+        function clearCart() {
+            cart = [];
+            renderCart();
+        }
+
+        function renderCart() {
+            const container = document.getElementById('pos-cart-items-container');
+            if (cart.length === 0) {
+                container.innerHTML = `<div class="text-center py-12 theme-text-muted text-xs">Cart is empty. Click products to add.</div>`;
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between pt-2">
+                        <div class="flex-1 pr-2">
+                            <h5 class="font-semibold text-xs theme-text-main truncate">${item.name}</h5>
+                            <p class="text-[10px] theme-text-muted">Rs. ${item.price} x ${item.qty}</p>
+                        </div>
+                        <div class="flex items-center gap-1.5">
+                            <button onclick="updateCartQty('${item.id}', -1)" class="w-6 h-6 rounded-md theme-bg-main border theme-border theme-text-main flex items-center justify-center font-bold text-xs">-</button>
+                            <span class="text-xs font-bold theme-text-main w-5 text-center">${item.qty}</span>
+                            <button onclick="updateCartQty('${item.id}', 1)" class="w-6 h-6 rounded-md theme-bg-main border theme-border theme-text-main flex items-center justify-center font-bold text-xs">+</button>
+                            <span class="text-xs font-bold theme-text-main ml-2 w-12 text-right">Rs. ${item.price * item.qty}</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            calculateCartTotals();
+        }
+
+        function calculateCartTotals() {
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const discount = parseFloat(document.getElementById('pos-discount-input')?.value || 0);
+            const netTotal = Math.max(0, subtotal - discount);
+            const cashReceived = parseFloat(document.getElementById('pos-cash-received')?.value || 0);
+            const change = Math.max(0, cashReceived - netTotal);
+
+            document.getElementById('cart-subtotal-text').textContent = `Rs. ${subtotal}`;
+            document.getElementById('cart-discount-text').textContent = `- Rs. ${discount}`;
+            document.getElementById('cart-net-total-text').textContent = `Rs. ${netTotal}`;
+
+            const changeRow = document.getElementById('cart-change-row');
+            if (cashReceived > 0 && cashReceived >= netTotal) {
+                changeRow.classList.remove('hidden');
+                document.getElementById('cart-change-text').textContent = `Rs. ${change}`;
+            } else {
+                changeRow.classList.add('hidden');
+            }
+        }
+
+        function togglePaymentInputs() {
+            const payMethod = document.getElementById('pos-payment-method').value;
+            const custSelect = document.getElementById('pos-customer-select');
+            if (payMethod === 'udhar') {
+                showToast('Please select registered Udhar Customer', 'info');
+            }
+        }
+
+        function processCheckout() {
+            if (cart.length === 0) {
+                showToast('Cart is empty!', 'error');
+                return;
+            }
+
+            const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            const discount = parseFloat(document.getElementById('pos-discount-input').value || 0);
+            const netTotal = Math.max(0, subtotal - discount);
+            const payMethod = document.getElementById('pos-payment-method').value;
+            const custId = document.getElementById('pos-customer-select').value;
+            const customer = db.customers.find(c => c.id === custId);
+
+            if (payMethod === 'udhar' && custId === 'c1') {
+                showToast('Walk-in customer cannot buy on Udhar. Select a customer!', 'error');
+                return;
+            }
+
+            // Deduct Stock & Calculate Profit
+            let orderProfit = 0;
+            cart.forEach(cartItem => {
+                const prod = db.products.find(p => p.id === cartItem.id);
+                if (prod) {
+                    prod.stock -= cartItem.qty;
+                    orderProfit += (cartItem.price - prod.cost) * cartItem.qty;
+                }
+            });
+            orderProfit -= discount;
+
+            const orderId = 'ORD-' + Date.now().toString().slice(-6);
+            const nowStr = new Date().toISOString().replace('T', ' ').slice(0, 16);
+
+            const newOrder = {
+                id: orderId,
+                date: nowStr,
+                customerId: custId,
+                customerName: customer ? customer.name : 'Walk-in',
+                items: [...cart],
+                subtotal,
+                discount,
+                netTotal,
+                profit: Math.max(0, orderProfit),
+                paymentMethod: payMethod
+            };
+
+            db.orders.unshift(newOrder);
+
+            // Handle Udhar Addition
+            if (payMethod === 'udhar' && customer) {
+                customer.balance += netTotal;
+                db.ledger.unshift({
+                    id: 'l-' + Date.now(),
+                    customerId: customer.id,
+                    date: nowStr,
+                    description: `POS Bill #${orderId}`,
+                    debit: netTotal,
+                    credit: 0,
+                    balance: customer.balance
+                });
+            }
+
+            saveDB();
+            renderPOSProducts();
+            showReceiptModal(newOrder);
+
+            // Reset POS State
+            cart = [];
+            document.getElementById('pos-discount-input').value = '0';
+            document.getElementById('pos-cash-received').value = '';
+            renderCart();
+            showToast(`Sale Completed #${orderId}`, 'success');
+        }
+
+        function showReceiptModal(order) {
+            document.getElementById('rec-shop-name').textContent = db.settings.shopName;
+            document.getElementById('rec-shop-address').textContent = db.settings.shopAddress;
+            document.getElementById('rec-shop-phone').textContent = `Ph: ${db.settings.shopPhone}`;
+            document.getElementById('rec-date-id').textContent = `Date: ${order.date} | Order #${order.id}`;
+
+            const itemsContainer = document.getElementById('rec-items-list');
+            itemsContainer.innerHTML = order.items.map(i => `
+                <div class="flex justify-between">
+                    <span class="truncate w-32">${i.name}</span>
+                    <span>${i.qty} x ${i.price}</span>
+                    <span class="font-bold">${i.qty * i.price}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('rec-subtotal').textContent = `Rs. ${order.subtotal}`;
+            document.getElementById('rec-discount').textContent = `Rs. ${order.discount}`;
+            document.getElementById('rec-total').textContent = `Rs. ${order.netTotal}`;
+            document.getElementById('rec-payment-type').textContent = order.paymentMethod;
+
+            openModal('modal-receipt');
+        }
+
+        /* ---------------- INVENTORY LOGIC ---------------- */
+        function renderInventoryTable() {
+            const query = document.getElementById('inv-search-input')?.value.toLowerCase() || '';
+            const catFilter = document.getElementById('inv-category-filter')?.value || 'all';
+
+            // Populate Filter Select
+            const categories = ['all', ...new Set(db.products.map(p => p.category))];
+            const filterSelect = document.getElementById('inv-category-filter');
+            if (filterSelect && filterSelect.options.length <= 1) {
+                filterSelect.innerHTML = categories.map(c => `<option value="${c}">${c === 'all' ? 'All Categories' : c}</option>`).join('');
+            }
+
+            const tbody = document.getElementById('inventory-tbody');
+            const filtered = db.products.filter(p => {
+                const matchesCat = catFilter === 'all' || p.category === catFilter;
+                const matchesQuery = p.name.toLowerCase().includes(query) || p.barcode.includes(query);
+                return matchesCat && matchesQuery;
+            });
+
+            tbody.innerHTML = filtered.map(p => `
+                <tr class="hover:bg-slate-500/5">
+                    <td class="p-3.5 font-mono text-[11px] theme-text-muted">${p.barcode}</td>
+                    <td class="p-3.5 font-bold theme-text-main">${p.name}</td>
+                    <td class="p-3.5"><span class="px-2 py-0.5 rounded-md theme-bg-main border theme-border text-[10px] theme-text-muted">${p.category}</span></td>
+                    <td class="p-3.5 text-right font-medium">Rs. ${p.cost}</td>
+                    <td class="p-3.5 text-right font-bold theme-text-accent">Rs. ${p.price}</td>
+                    <td class="p-3.5 text-center font-bold ${p.stock <= 5 ? 'text-rose-500' : 'theme-text-main'}">${p.stock}</td>
+                    <td class="p-3.5 theme-text-muted">${p.expiry || 'N/A'}</td>
+                    <td class="p-3.5 text-center">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold ${p.stock > 10 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'}">
+                            ${p.stock > 10 ? 'In Stock' : 'Low Stock'}
+                        </span>
+                    </td>
+                    <td class="p-3.5 text-right space-x-2">
+                        <button onclick="editProduct('${p.id}')" class="text-xs theme-text-accent hover:underline">Edit</button>
+                        <button onclick="deleteProduct('${p.id}')" class="text-xs text-rose-500 hover:underline">Delete</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAddProductModal() {
+            document.getElementById('form-product').reset();
+            document.getElementById('prod-id').value = '';
+            document.getElementById('modal-product-title').textContent = 'Add New Product';
+            openModal('modal-product');
+        }
+
+        function editProduct(id) {
+            const p = db.products.find(item => item.id === id);
+            if (!p) return;
+            document.getElementById('prod-id').value = p.id;
+            document.getElementById('prod-barcode').value = p.barcode;
+            document.getElementById('prod-name').value = p.name;
+            document.getElementById('prod-category').value = p.category;
+            document.getElementById('prod-stock').value = p.stock;
+            document.getElementById('prod-cost').value = p.cost;
+            document.getElementById('prod-price').value = p.price;
+            document.getElementById('prod-expiry').value = p.expiry || '';
+            document.getElementById('modal-product-title').textContent = 'Edit Product';
+            openModal('modal-product');
+        }
+
+        function saveProduct(e) {
+            e.preventDefault();
+            const id = document.getElementById('prod-id').value;
+            const productData = {
+                id: id || 'p-' + Date.now(),
+                barcode: document.getElementById('prod-barcode').value,
+                name: document.getElementById('prod-name').value,
+                category: document.getElementById('prod-category').value,
+                stock: parseInt(document.getElementById('prod-stock').value),
+                cost: parseFloat(document.getElementById('prod-cost').value),
+                price: parseFloat(document.getElementById('prod-price').value),
+                expiry: document.getElementById('prod-expiry').value
+            };
+
+            if (id) {
+                const index = db.products.findIndex(p => p.id === id);
+                if (index !== -1) db.products[index] = productData;
+            } else {
+                db.products.push(productData);
+            }
+
+            saveDB();
+            closeModal('modal-product');
+            renderInventoryTable();
+            renderPOSCategories();
+            showToast('Product Saved Successfully');
+        }
+
+        function deleteProduct(id) {
+            if (confirm('Are you sure you want to delete this product?')) {
+                db.products = db.products.filter(p => p.id !== id);
+                saveDB();
+                renderInventoryTable();
+                showToast('Product Removed', 'info');
+            }
+        }
+
+        /* ---------------- UDHAR KHATA LOGIC ---------------- */
+        function populateCustomerDropdown() {
+            const select = document.getElementById('pos-customer-select');
+            if (select) {
+                select.innerHTML = db.customers.map(c => `<option value="${c.id}">${c.name} (${c.phone})</option>`).join('');
+            }
+        }
+
+        function updateUdharBadge() {
+            const totalUdhar = db.customers.reduce((sum, c) => sum + c.balance, 0);
+            const badge = document.getElementById('udhar-badge-count');
+            if (badge) badge.textContent = `Rs. ${totalUdhar}`;
+        }
+
+        function renderUdharView() {
+            const totalCust = db.customers.filter(c => c.id !== 'c1').length;
+            const totalBal = db.customers.reduce((sum, c) => sum + c.balance, 0);
+
+            document.getElementById('udhar-total-customers').textContent = totalCust;
+            document.getElementById('udhar-total-receivables').textContent = `Rs. ${totalBal.toLocaleString()}`;
+
+            renderUdharCustomerList();
+            updateUdharBadge();
+        }
+
+        function renderUdharCustomerList() {
+            const query = document.getElementById('udhar-search-input')?.value.toLowerCase() || '';
+            const container = document.getElementById('udhar-customers-list');
+
+            const filtered = db.customers.filter(c => c.id !== 'c1' && (c.name.toLowerCase().includes(query) || c.phone.includes(query)));
+
+            container.innerHTML = filtered.map(c => `
+                <div onclick="selectUdharCustomer('${c.id}')" class="p-3 rounded-xl border theme-border cursor-pointer transition-all ${selectedCustomerId === c.id ? 'theme-bg-accent-soft theme-border-accent' : 'theme-bg-main hover:theme-bg-card'}">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h4 class="font-bold text-xs theme-text-main">${c.name}</h4>
+                            <p class="text-[10px] theme-text-muted">${c.phone}</p>
+                        </div>
+                        <span class="font-bold text-xs ${c.balance > 0 ? 'text-rose-500' : 'text-emerald-500'}">Rs. ${c.balance}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function selectUdharCustomer(id) {
+            selectedCustomerId = id;
+            const customer = db.customers.find(c => c.id === id);
+            if (!customer) return;
+
+            document.getElementById('udhar-ledger-name').textContent = customer.name;
+            document.getElementById('udhar-ledger-phone').textContent = `Phone: ${customer.phone}`;
+            document.getElementById('udhar-ledger-balance').textContent = `Rs. ${customer.balance}`;
+            document.getElementById('btn-udhar-payment').disabled = false;
+
+            renderUdharCustomerList();
+
+            // Render Ledger Entries
+            const entries = db.ledger.filter(l => l.customerId === id);
+            const tbody = document.getElementById('udhar-ledger-tbody');
+
+            tbody.innerHTML = entries.length ? entries.map(l => `
+                <tr>
+                    <td class="p-2.5 theme-text-muted">${l.date}</td>
+                    <td class="p-2.5 font-medium theme-text-main">${l.description}</td>
+                    <td class="p-2.5 text-right font-bold text-rose-500">${l.debit ? 'Rs. ' + l.debit : '-'}</td>
+                    <td class="p-2.5 text-right font-bold text-emerald-500">${l.credit ? 'Rs. ' + l.credit : '-'}</td>
+                    <td class="p-2.5 text-right font-bold theme-text-main">Rs. ${l.balance}</td>
+                </tr>
+            `).join('') : `<tr><td colspan="5" class="text-center py-8 theme-text-muted">No transaction logs for this account.</td></tr>`;
+        }
+
+        function openAddCustomerModal() {
+            openModal('modal-customer');
+        }
+
+        function saveCustomer(e) {
+            e.preventDefault();
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const initialBal = parseFloat(document.getElementById('cust-balance').value || 0);
+
+            const newCust = {
+                id: 'c-' + Date.now(),
+                name,
+                phone,
+                balance: initialBal
+            };
+
+            db.customers.push(newCust);
+            if (initialBal > 0) {
+                db.ledger.unshift({
+                    id: 'l-' + Date.now(),
+                    customerId: newCust.id,
+                    date: new Date().toISOString().replace('T', ' ').slice(0, 16),
+                    description: 'Opening Balance',
+                    debit: initialBal,
+                    credit: 0,
+                    balance: initialBal
+                });
+            }
+
+            saveDB();
+            closeModal('modal-customer');
+            populateCustomerDropdown();
+            renderUdharView();
+            showToast('Customer Created');
+        }
+
+        function openUdharPaymentModal() {
+            if (!selectedCustomerId) return;
+            openModal('modal-udhar-payment');
+        }
+
+        function submitUdharPayment(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('udhar-pay-amount').value);
+            const note = document.getElementById('udhar-pay-note').value || 'Udhar Wapasi';
+
+            const customer = db.customers.find(c => c.id === selectedCustomerId);
+            if (!customer) return;
+
+            customer.balance = Math.max(0, customer.balance - amount);
+
+            db.ledger.unshift({
+                id: 'l-' + Date.now(),
+                customerId: customer.id,
+                date: new Date().toISOString().replace('T', ' ').slice(0, 16),
+                description: `Payment: ${note}`,
+                debit: 0,
+                credit: amount,
+                balance: customer.balance
+            });
+
+            saveDB();
+            closeModal('modal-udhar-payment');
+            selectUdharCustomer(customer.id);
+            renderUdharView();
+            showToast('Payment Recorded Successfully');
+        }
+
+        /* ---------------- SUPPLIERS LOGIC ---------------- */
+        function renderSuppliersView() {
+            const container = document.getElementById('suppliers-list-container');
+            container.innerHTML = db.suppliers.map(s => `
+                <div class="p-3 theme-bg-main border theme-border rounded-xl">
+                    <h4 class="font-bold text-xs theme-text-main">${s.name}</h4>
+                    <p class="text-[10px] theme-text-muted">Ph: ${s.phone}</p>
+                    <span class="text-[10px] theme-text-accent mt-1 block">${s.category}</span>
+                </div>
+            `).join('');
+
+            const poTbody = document.getElementById('po-history-tbody');
+            poTbody.innerHTML = db.purchaseOrders.length ? db.purchaseOrders.map(po => `
+                <tr>
+                    <td class="p-2.5 font-mono text-[11px]">${po.id}</td>
+                    <td class="p-2.5 font-semibold">${po.supplierName}</td>
+                    <td class="p-2.5 theme-text-muted">${po.date}</td>
+                    <td class="p-2.5 text-right font-bold">Rs. ${po.totalCost}</td>
+                    <td class="p-2.5 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] bg-emerald-500/10 text-emerald-500 font-semibold">Received</span></td>
+                </tr>
+            `).join('') : `<tr><td colspan="5" class="text-center py-8 theme-text-muted">No purchase orders created yet.</td></tr>`;
+        }
+
+        function openAddSupplierModal() {
+            openModal('modal-supplier');
+        }
+
+        function saveSupplier(e) {
+            e.preventDefault();
+            db.suppliers.push({
+                id: 's-' + Date.now(),
+                name: document.getElementById('supp-name').value,
+                phone: document.getElementById('supp-phone').value,
+                category: document.getElementById('supp-category').value
+            });
+            saveDB();
+            closeModal('modal-supplier');
+            renderSuppliersView();
+            showToast('Supplier Added');
+        }
+
+        function openPOModal(productId = null) {
+            const suppSelect = document.getElementById('po-supplier-select');
+            suppSelect.innerHTML = db.suppliers.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+            const prodSelect = document.getElementById('po-product-select');
+            prodSelect.innerHTML = db.products.map(p => `<option value="${p.id}" ${p.id === productId ? 'selected' : ''}>${p.name} (In stock: ${p.stock})</option>`).join('');
+
+            openModal('modal-po');
+        }
+
+        function submitPurchaseOrder(e) {
+            e.preventDefault();
+            const suppId = document.getElementById('po-supplier-select').value;
+            const prodId = document.getElementById('po-product-select').value;
+            const qty = parseInt(document.getElementById('po-quantity').value);
+            const cost = parseFloat(document.getElementById('po-cost').value);
+
+            const supplier = db.suppliers.find(s => s.id === suppId);
+            const product = db.products.find(p => p.id === prodId);
+
+            if (product) {
+                product.stock += qty;
+                product.cost = cost;
+            }
+
+            const po = {
+                id: 'PO-' + Date.now().toString().slice(-5),
+                supplierName: supplier ? supplier.name : 'Unknown Vendor',
+                date: new Date().toISOString().split('T')[0],
+                productName: product ? product.name : '',
+                qty,
+                totalCost: qty * cost
+            };
+
+            db.purchaseOrders.unshift(po);
+            saveDB();
+            closeModal('modal-po');
+            renderSuppliersView();
+            renderInventoryTable();
+            showToast('Stock Received & Updated');
+        }
+
+        /* ---------------- REPORTS & ANALYTICS LOGIC ---------------- */
+        function renderReportsView() {
+            const totalRev = db.orders.reduce((sum, o) => sum + o.netTotal, 0);
+            const totalProf = db.orders.reduce((sum, o) => sum + o.profit, 0);
+
+            document.getElementById('report-total-revenue').textContent = `Rs. ${totalRev.toLocaleString()}`;
+            document.getElementById('report-total-profit').textContent = `Rs. ${totalProf.toLocaleString()}`;
+            document.getElementById('report-total-orders').textContent = db.orders.length;
+
+            const tbody = document.getElementById('reports-sales-tbody');
+            tbody.innerHTML = db.orders.length ? db.orders.map(o => `
+                <tr>
+                    <td class="p-3 font-mono text-[11px] theme-text-muted">${o.id}</td>
+                    <td class="p-3 theme-text-muted">${o.date}</td>
+                    <td class="p-3 font-medium">${o.customerName}</td>
+                    <td class="p-3 uppercase text-[10px] font-semibold">${o.paymentMethod}</td>
+                    <td class="p-3 text-right">${o.items.reduce((s, i) => s + i.qty, 0)}</td>
+                    <td class="p-3 text-right font-bold theme-text-main">Rs. ${o.netTotal}</td>
+                    <td class="p-3 text-right font-bold text-emerald-500">Rs. ${o.profit}</td>
+                </tr>
+            `).join('') : `<tr><td colspan="7" class="text-center py-8 theme-text-muted">No sales record found.</td></tr>`;
+        }
+
+        /* ---------------- SETTINGS & BACKUP LOGIC ---------------- */
+        function loadSettings() {
+            document.getElementById('setting-shop-name').value = db.settings.shopName || '';
+            document.getElementById('setting-shop-phone').value = db.settings.shopPhone || '';
+            document.getElementById('setting-shop-address').value = db.settings.shopAddress || '';
+        }
+
+        function saveSettings() {
+            db.settings.shopName = document.getElementById('setting-shop-name').value;
+            db.settings.shopPhone = document.getElementById('setting-shop-phone').value;
+            db.settings.shopAddress = document.getElementById('setting-shop-address').value;
+            
+            document.getElementById('sidebar-shop-name').textContent = db.settings.shopName;
+            saveDB();
+            showToast('Settings Saved');
+        }
+
+        function exportDataJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db, null, 2));
+            const dlAnchor = document.createElement('a');
+            dlAnchor.setAttribute("href", dataStr);
+            dlAnchor.setAttribute("download", `tuckshop_backup_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(dlAnchor);
+            dlAnchor.click();
+            dlAnchor.remove();
+        }
+
+        function importDataJSON(event) {
+            const fileReader = new FileReader();
+            fileReader.onload = function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed && parsed.products) {
+                        db = parsed;
+                        saveDB();
+                        location.reload();
+                    } else {
+                        showToast('Invalid Data File Structure', 'error');
+                    }
+                } catch (err) {
+                    showToast('Failed to parse JSON file', 'error');
+                }
+            };
+            fileReader.readAsText(event.target.files[0]);
+        }
+
+        function resetDataPrompt() {
+            if (confirm('Reset database to default demo dataset? All custom sales will be reset.')) {
+                localStorage.removeItem('tuckshop_db');
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
